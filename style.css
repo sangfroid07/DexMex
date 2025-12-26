@@ -1,0 +1,138 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 30px;
+    color: #fff;
+
+    background: url("Bg.jpg") center / cover fixed no-repeat;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 20, 25, 0.75);
+    z-index: -1;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.4rem;
+}
+
+.subtitle {
+    text-align: center;
+    opacity: 0.85;
+    margin-bottom: 25px;
+}
+
+form {
+    background: rgba(255,255,255,0.12);
+    padding: 20px;
+    border-radius: 14px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(6px);
+}
+
+input, textarea, button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    margin-bottom: 14px;
+}
+
+input, textarea {
+    background: rgba(255,255,255,0.9);
+    color: #111;
+}
+
+textarea {
+    height: 100px;
+    resize: none;
+}
+
+button {
+    background: #ffcc70;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #ffd98e;
+}
+
+.anon-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    opacity: 0.85;
+    margin-bottom: 12px;
+}
+
+/* POSTS */
+
+.post {
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    position: relative;
+
+    border: 2px dashed rgba(255,255,255,0.8);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+
+.post .name {
+    font-weight: bold;
+    font-size: 1.05rem;
+}
+
+.post .time {
+    font-size: 0.8rem;
+    opacity: 0.75;
+}
+
+.post p {
+    margin-top: 8px;
+    white-space: pre-wrap;
+}
+
+/* GOOFY IMAGE */
+
+.post-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    background-size: cover;
+    background-position: center;
+
+    border: 2px solid #fff;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+    body {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}
