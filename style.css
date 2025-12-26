@@ -1,112 +1,72 @@
-/* RESET */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-}
-
-/* PAGE BACKGROUND */
 body {
-    min-height: 100vh;
-    background:
-        linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-        url("bg.jpg"); /* <-- REPLACE THIS IMAGE */
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-
-    color: #ffffff;
-    padding: 30px 15px;
+    margin: 0;
+    font-family: sans-serif;
+    background: url('background.jpg') center/cover no-repeat;
+    color: #fff;
 }
 
-/* MAIN CONTAINER */
 .container {
-    max-width: 620px;
-    margin: auto;
-}
-
-/* TITLE */
-h1 {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
     text-align: center;
-    font-size: 2.4rem;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
 }
 
-.subtitle {
-    text-align: center;
-    opacity: 0.85;
-    margin-bottom: 28px;
-}
-
-/* FORM CARD */
 form {
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    border-radius: 18px;
+    background: rgba(0,0,0,0.5);
     padding: 20px;
-    margin-bottom: 35px;
-
-    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    border-radius: 12px;
+    margin-bottom: 2rem;
 }
 
-/* INPUTS */
 input, textarea, button {
     width: 100%;
+    margin: 8px 0;
+    padding: 10px 12px;
+    border-radius: 8px;
     border: none;
-    border-radius: 12px;
-    padding: 12px 14px;
     font-size: 1rem;
 }
 
-input, textarea {
-    background: rgba(255,255,255,0.92);
-    color: #111;
-    margin-bottom: 14px;
-}
-
-textarea {
-    resize: none;
-    height: 110px;
-}
-
-/* BUTTON */
 button {
-    background: #ffd27d;
-    color: #222;
-    font-weight: 700;
+    background: #ffc56b;
+    font-weight: bold;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
-}
-
-/* ANON TOGGLE */
-.anon-toggle {
+#wall {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.9rem;
-    opacity: 0.85;
-    margin-bottom: 10px;
+    flex-direction: column;
+    gap: 12px;
 }
 
-/* POSTS */
-.post {
+/* Post box */
+.post-textbox {
     position: relative;
-    padding: 18px;
-    border-radius: 20px;
-    margin-bottom: 18px;
+    padding: 12px;
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: #fff;
+}
 
-    background: linear-gradient(135deg, #7aa2a9, #4f6d73);
-    border: 2px dashed rgba(255,255,255,0.6);
+.post-textbox .name {
+    font-weight: bold;
+    font-size: 1.05rem;
+}
 
+.post-textbox .time {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    margin-bottom: 6px;
+}
+
+.post-textbox p {
+    margin: 0;
+    line-height: 1.4;
+    font-size: 1rem;
+    color: #fff;
+}
     box-shadow: 0 10px 25px rgba(0,0,0,0.35);
     overflow: hidden;
 }
