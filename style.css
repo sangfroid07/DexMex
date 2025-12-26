@@ -1,112 +1,155 @@
+/* --- GENERAL --- */
 body {
     margin: 0;
-    font-family: sans-serif;
-    background: url('background.jpg') center/cover no-repeat;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: url('bg.jpg') no-repeat center center fixed;
+    background-size: cover;
     color: #fff;
 }
 
+.overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: -1;
+}
+
+/* --- CONTAINER --- */
 .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 2rem;
-    text-align: center;
-}
-
-form {
+    width: 90%;
+    max-width: 500px;
+    margin: 50px auto;
     background: rgba(0,0,0,0.5);
+    border-radius: 15px;
     padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 2rem;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
 }
 
-input, textarea, button {
-    width: 100%;
-    margin: 8px 0;
-    padding: 10px 12px;
-    border-radius: 8px;
+/* --- HEADER --- */
+h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+/* --- FORM --- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input[type="text"], textarea {
+    padding: 12px;
+    border-radius: 10px;
     border: none;
-    font-size: 1rem;
+    font-size: 14px;
+    outline: none;
+    resize: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    min-height: 80px;
 }
 
 button {
-    background: #ffc56b;
+    background: #ffc867;
+    border: none;
+    padding: 12px;
     font-weight: bold;
+    border-radius: 10px;
     cursor: pointer;
+    transition: 0.2s;
 }
 
+button:hover {
+    background: #ffb347;
+}
+
+/* --- ANONYMOUS TOGGLE --- */
+.anon-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+/* --- POST WALL --- */
 #wall {
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
 }
 
-/* Post box */
+/* --- INDIVIDUAL POST BOX --- */
 .post-textbox {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
     position: relative;
-    padding: 12px;
-    border-radius: 12px;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    color: #fff;
+    overflow: hidden;
 }
 
 .post-textbox .name {
     font-weight: bold;
-    font-size: 1.05rem;
+    margin-bottom: 3px;
 }
 
 .post-textbox .time {
-    font-size: 0.75rem;
-    opacity: 0.85;
-    margin-bottom: 6px;
+    font-size: 12px;
+    color: #ddd;
+    margin-bottom: 8px;
 }
 
 .post-textbox p {
     margin: 0;
-    line-height: 1.4;
-    font-size: 1rem;
-    color: #fff;
-}
-    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-    overflow: hidden;
 }
 
-/* INNER TEXT GLASS */
-.post-textbox {
-    background: rgba(0,0,0,0.28);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-
-    padding: 12px 14px;
-    border-radius: 14px;
-
-    border: 1px solid rgba(255,255,255,0.18);
-    max-width: 85%;
-}
-
-/* NAME */
-.post-textbox .name {
-    font-weight: 700;
-    font-size: 1.05rem;
-    color: #ffffff;
-}
-
-/* TIME */
-.post-textbox .time {
-    font-size: 0.75rem;
-    opacity: 0.85;
-    margin-bottom: 6px;
-    color: #eaeaea;
-}
-
-/* MESSAGE */
-.post-textbox p {
-    line-height: 1.45;
-    color: #ffffff;
-}
-
-/* GOOBY IMAGE */
+/* --- POST IMAGE AVATAR --- */
 .post-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #fff;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 500px) {
+    .container {
+        margin: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    button, input, textarea {
+        font-size: 14px;
+    }
+
+    .post-image {
+        width: 40px;
+        height: 40px;
+    }
+}.post-image {
     width: 52px;
     height: 52px;
     border-radius: 50%;
