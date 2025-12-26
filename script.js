@@ -1,112 +1,103 @@
-// 🔥 FIREBASE CONFIG
+// 🔥 Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyBbVHB-sjFqGDvpYiRTof8zdqF6oVEfYxo",
     authDomain: "dexxer-43e55.firebaseapp.com",
     projectId: "dexxer-43e55",
-    storageBucket: "dexxer-43e55.firebasestorage.app",
+    storageBucket: "dexxer-43e55.appspot.com",
     messagingSenderId: "80900359866",
     appId: "1:80900359866:web:818425eff775c7f55fe483"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ELEMENTS
+// DOM Elements
 const form = document.getElementById("messageForm");
 const wall = document.getElementById("wall");
 const anonCheckbox = document.getElementById("anonymous");
-const nameField = document.getElementById("name");
-const messageInput = document.getElementById("message");
+const nameInput = document.getElementById("name");
+const messageInput = document.getElementById("messageInput");
 
-// ✅ Checkbox unchecked by default
+// Checkbox default
 anonCheckbox.checked = false;
-nameField.disabled = false;
+nameInput.disabled = false;
 
-// Handle checkbox change
+// Toggle name field
 anonCheckbox.addEventListener("change", () => {
-    nameField.disabled = anonCheckbox.checked;
-    if (anonCheckbox.checked) nameField.value = "~Anonymous ❤️";
-    else if(nameField.value === "~Anonymous ❤️") nameField.value = "";
+    nameInput.disabled = anonCheckbox.checked;
+    if (anonCheckbox.checked) nameInput.value = "";
 });
 
-// PASTEL GRADIENTS
-const gradients = [
-    'linear-gradient(135deg, #f4b1b1, #b8c6ff)',
-    'linear-gradient(135deg, #ffd6c9, #ff9aa2)',
-    'linear-gradient(135deg, #c7e9d8, #b5d8ff)',
-    'linear-gradient(135deg, #f2f2f2, #cfcfcf)',
-    'linear-gradient(135deg, #f3e6d3, #e6d5b8)'
-];
+// Encryption key for named messages (change this)
+const ENC_KEY = 3;
 
-// GOOFY IMAGES
-const images = ['Ig1.jpg','Ig2.jpg','Ig3.jpg','Ig4.jpg','Ig5.jpg'];
+// Simple Caesar cipher
+function encrypt(text) {
+    return text.split('').map(c => String.fromCharCode(c.charCodeAt(0)+ENC_KEY)).join('');
+}
+function decrypt(text) {
+    return text.split('').map(c => String.fromCharCode(c.charCodeAt(0)-ENC_KEY)).join('');
+}
 
-// REALTIME LISTENER
-db.collection("posts")
-  .orderBy("time", "desc")
-  .onSnapshot(snapshot => {
-      wall.innerHTML = "";
-      snapshot.forEach(doc => renderPost(doc.data()));
-  });
+// REALTIME WALL
+db.collection("posts").orderBy("time", "desc").onSnapshot(snapshot => {
+    wall.innerHTML = "";
+    snapshot.forEach(doc => renderPost(doc.data()));
+});
 
-// RENDER POST
+// Render function
 function renderPost(data) {
     const post = document.createElement("div");
-    post.className = "post";
+    post.classList.add("post");
 
-    // RANDOM GRADIENT
-    const randomBg = gradients[Math.floor(Math.random() * gradients.length)];
-    post.style.background = randomBg;
+    // Gradient backgrounds
+    const gradients = [
+        'linear-gradient(135deg, #f6d365, #fda085)',
+        'linear-gradient(135deg, #fbc2eb, #a6c1ee)',
+        'linear-gradient(135deg, #cfd9df, #e2ebf0)',
+        'linear-gradient(135deg, #d4fc79, #96e6a1)',
+        'linear-gradient(135deg, #fddb92, #d1fdff)'
+    ];
+    post.style.background = gradients[Math.floor(Math.random() * gradients.length)];
 
-    // RANDOM IMAGE
-    const img = images[Math.floor(Math.random() * images.length)];
-
-    // DISPLAY TEXT
+    // Encrypt check
     let displayText = data.text;
-    if (!data.name.startsWith("~Anon")) {
-        // Mask named posts on wall
-        displayText = "******";
+    if (!data.anonymous) {
+        displayText = '*'.repeat(displayText.length); // masked
     }
 
     post.innerHTML = `
-        <div class="post-textbox">
-            <div class="name">${escapeHTML(data.name)}</div>
-            <div class="time">${new Date(data.time).toLocaleString()}</div>
-            <p>${escapeHTML(displayText)}</p>
-        </div>
-        <div class="post-image"></div>
+        <div class="name">${escapeHTML(data.name)}</div>
+        <div class="time">${new Date(data.time).toLocaleString()}</div>
+        <p>${escapeHTML(displayText)}</p>
     `;
-
-    post.querySelector(".post-image").style.backgroundImage = `url("${img}")`;
 
     wall.appendChild(post);
 }
 
-// SUBMIT FORM
-form.addEventListener("submit", async (e) => {
+// Submit
+form.addEventListener("submit", async e => {
     e.preventDefault();
-
     const text = messageInput.value.trim();
     if (!text) return;
 
-    // Require name if not anonymous
-    if (!anonCheckbox.checked && nameField.value.trim() === "") {
-        alert("Please enter your name or check Anonymous!");
-        return;
-    }
-
-    const name = (!anonCheckbox.checked && nameField.value.trim() !== "")
-        ? nameField.value.trim()
+    const name = (!anonCheckbox.checked && nameInput.value.trim() !== "")
+        ? nameInput.value.trim()
         : "~Anon <3";
 
-    await db.collection("posts").add({
-        name,
-        text,
-        time: Date.now()
-    });
+    const postData = {
+        name: name,
+        text: (!anonCheckbox.checked) ? encrypt(text) : text, // encrypt named messages
+        time: Date.now(),
+        anonymous: anonCheckbox.checked
+    };
+
+    await db.collection("posts").add(postData);
 
     form.reset();
-    anonCheckbox.checked = false; // reset to default
-    nameField.disabled = false;   // reset to default
+    anonCheckbox.checked = false;
+    nameInput.disabled = false;
+});    nameField.disabled = false;   // reset to default
     nameField.value = "";         // clear name input
 });
 
