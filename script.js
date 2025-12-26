@@ -8,39 +8,59 @@ const firebaseConfig = {
     appId: "1:80900359866:web:818425eff775c7f55fe483"
 };
 
-fire.ase.initializ(pp(firebaseCon);
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // DOM
 const form = document.getElementById("messageForm");
 const nameInput = document.getElementById("name");
 const messageInput = document.getElementById("message");
-const anon = document.getElementById("anonymous");
+const anonCheckbox = document.getElementById("anonymous");
 const wall = document.getElementById("wall");
 
-// LISTEN FOR POSTS
+// Toggle name input required based on Anonymous
+anonCheckbox.addEventListener("change", () => {
+    if (anonCheckbox.checked) {
+        nameInput.value = "";
+        nameInput.disabled = true;
+    } else {
+        nameInput.disabled = false;
+    }
+});
+
+// Escape HTML
+function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, m => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+    })[m]);
+}
+
+// Real-time listener
 db.collection("posts").orderBy("time", "desc").onSnapshot(snapshot => {
-    wall.innerHTML = ""; // clear wall
+    wall.innerHTML = "";
     snapshot.forEach(doc => {
         const data = doc.data();
 
         const post = document.createElement("div");
         post.classList.add("post-textbox");
 
-        // If message is censored (for named users)
-        let text = data.censored ? "*".repeat(data.text.length) : data.text;
+        let displayText = data.censored ? "*".repeat(data.text.length) : data.text;
 
         post.innerHTML = `
-            <div class="name">${data.name}</div>
+            <div class="name">${escapeHTML(data.name)}</div>
             <div class="time">${new Date(data.time.toMillis()).toLocaleString()}</div>
-            <p>${text}</p>
+            <p>${escapeHTML(displayText)}</p>
         `;
 
         wall.appendChild(post);
     });
 });
 
-// SUBMIT FORM
+// Submit form
 form.addEventListener("submit", async e => {
     e.preventDefault();
 
@@ -48,25 +68,26 @@ form.addEventListener("submit", async e => {
     if (!text) return;
 
     let name, censored;
-    if (anon.checked) {
+    if (anonCheckbox.checked) {
         name = "~Anon <3";
-        censored = false; // anonymous posts are shown normally
+        censored = false;
     } else {
         name = nameInput.value.trim();
         if (!name) {
             alert("Please enter your name or check 'Post as Anonymous'");
             return;
         }
-        censored = true; // named users get their message censored
+        censored = true;
     }
 
     await db.collection("posts").add({
-        name,
-        text,
-        censored,
+        name: name,
+        text: text,
+        censored: censored,
         time: firebase.firestore.Timestamp.now()
     });
 
     form.reset();
-    anon.checked = false;
+    anonCheckbox.checked = false;
+    nameInput.disabled = false;
 });
