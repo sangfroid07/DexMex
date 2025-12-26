@@ -18,14 +18,25 @@ const messageInput = document.getElementById("message");
 const anonCheckbox = document.getElementById("anonymous");
 const wall = document.getElementById("wall");
 
-// Toggle name input required based on Anonymous
+// Gradients (PASTEL, CLASSY)
+const gradients = [
+    "linear-gradient(135deg, #f6d365, #fda085)", // peach
+    "linear-gradient(135deg, #a1c4fd, #c2e9fb)", // blue
+    "linear-gradient(135deg, #fbc2eb, #a6c1ee)", // pink
+    "linear-gradient(135deg, #d4fc79, #96e6a1)", // green
+    "linear-gradient(135deg, #ffecd2, #fcb69f)"  // tan
+];
+
+// Goofy icons
+const icons = [
+    "Ig1.jpg","Ig2.jpg","Ig3.jpg","Ig4.jpg","Ig5.jpg",
+    "Ig6.jpg","Ig7.jpg","Ig8.jpg","Ig9.jpg","Ig10.jpg"
+];
+
+// Toggle name field
 anonCheckbox.addEventListener("change", () => {
-    if (anonCheckbox.checked) {
-        nameInput.value = "";
-        nameInput.disabled = true;
-    } else {
-        nameInput.disabled = false;
-    }
+    nameInput.disabled = anonCheckbox.checked;
+    if (anonCheckbox.checked) nameInput.value = "";
 });
 
 // Escape HTML
@@ -39,73 +50,66 @@ function escapeHTML(str) {
     })[m]);
 }
 
-// Preload goofy images
-const gradients = [
-    "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
-    "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)",
-    "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
-    "linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)",
-    "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)"
-];
+// 🔁 REALTIME WALL
+db.collection("posts")
+.orderBy("time", "desc")
+.onSnapshot(snapshot => {
+    wall.innerHTML = "";
 
-const icons = [
-    "Ig1.jpg", "Ig2.jpg", "Ig3.jpg", "Ig4.jpg", "Ig5.jpg",
-    "Ig6.jpg", "Ig7.jpg", "Ig8.jpg", "Ig9.jpg", "Ig10.jpg"
-];
+    snapshot.forEach(doc => {
+        const data = doc.data();
+        const post = document.createElement("div");
+        post.classList.add("post-textbox");
 
-// Inside the snapshot forEach:
-snapshot.forEach(doc => {
-    const data = doc.data();
-    const post = document.createElement("div");
-    post.classList.add("post-textbox");
+        // RANDOM STYLE
+        const gradient = gradients[Math.floor(Math.random() * gradients.length)];
+        const icon = icons[Math.floor(Math.random() * icons.length)];
+        post.style.background = gradient;
 
-    // Random gradient & icon
-    const gradient = gradients[Math.floor(Math.random() * gradients.length)];
-    const icon = icons[Math.floor(Math.random() * icons.length)];
+        // 🔐 CENSOR ONLY NAMED POSTS
+        let displayText;
+        if (data.isAnonymous) {
+            displayText = data.text; // fully visible
+        } else {
+            displayText = "*".repeat(data.text.length); // censored
+        }
 
-    let displayText = data.censored ? "*".repeat(data.text.length) : data.text;
-
-    post.innerHTML = `
-        <div class="post-header" style="background: ${gradient}">
-            <img src="${icon}" class="post-icon" />
+        post.innerHTML = `
             <div class="name">${escapeHTML(data.name)}</div>
             <div class="time">${new Date(data.time.toMillis()).toLocaleString()}</div>
-        </div>
-        <p>${escapeHTML(displayText)}</p>
-    `;
+            <p>${escapeHTML(displayText)}</p>
+            <div class="post-image" style="background-image:url('${icon}')"></div>
+        `;
 
-    wall.appendChild(post);
-});
+        wall.appendChild(post);
+    });
 });
 
-// Submit form
+// 📝 SUBMIT
 form.addEventListener("submit", async e => {
     e.preventDefault();
 
     const text = messageInput.value.trim();
     if (!text) return;
 
-    let name, censored;
-    if (anonCheckbox.checked) {
-        name = "~Anon <3";
-        censored = false;
-    } else {
-        name = nameInput.value.trim();
-        if (!name) {
-            alert("Please enter your name or check 'Post as Anonymous'");
-            return;
-        }
-        censored = true;
+    const isAnonymous = anonCheckbox.checked;
+    const name = isAnonymous ? "~Anon <3" : nameInput.value.trim();
+
+    if (!isAnonymous && !name) {
+        alert("Enter your name or post anonymously.");
+        return;
     }
 
     await db.collection("posts").add({
         name: name,
         text: text,
-        censored: censored,
+        isAnonymous: isAnonymous,
         time: firebase.firestore.Timestamp.now()
     });
 
     form.reset();
     anonCheckbox.checked = false;
+    nameInput.disabled = false;
+});    anonCheckbox.checked = false;
     nameInput.disabled = false;
 });});
