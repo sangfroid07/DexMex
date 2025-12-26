@@ -124,6 +124,37 @@ button:hover {
     white-space: pre-wrap;
 }
 
+.post-textbox {
+    background: rgba(0, 0, 0, 0.45); /* solid but not ugly */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    padding: 10px 12px;
+    border-radius: 12px;
+
+    max-width: 85%;
+}
+
+/* TEXT INSIDE */
+.post-textbox .name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff;
+}
+
+.post-textbox .time {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    margin-bottom: 6px;
+    color: #eaeaea;
+}
+
+.post-textbox p {
+    margin: 0;
+    line-height: 1.4;
+    color: #ffffff;
+}
+
 /* GOOFY IMAGE */
 
 .post-image {
