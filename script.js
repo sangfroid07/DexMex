@@ -58,11 +58,14 @@ function renderPost(data) {
         images[Math.floor(Math.random() * images.length)];
 
     post.innerHTML = `
+    <div class="post-textbox">
         <div class="name">${escapeHTML(data.name)}</div>
         <div class="time">${new Date(data.time).toLocaleString()}</div>
         <p>${escapeHTML(data.text)}</p>
-        <div class="post-image"></div>
-    `;
+    </div>
+
+    <div class="post-image"></div>
+`;
 
     post.querySelector(".post-image").style.backgroundImage =
         `url("${img}")`;
