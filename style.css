@@ -125,14 +125,12 @@ button:hover {
 }
 
 .post-textbox {
-    background: rgba(0, 0, 0, 0.45); /* solid but not ugly */
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.25);   /* lighter glass */
+    backdrop-filter: blur(6px);       /* more blur, less darkness */
+    -webkit-backdrop-filter: blur(6px);
 
-    padding: 10px 12px;
-    border-radius: 12px;
-
-    max-width: 85%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.18);
 }
 
 /* TEXT INSIDE */
