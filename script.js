@@ -3,20 +3,30 @@ const firebaseConfig = {
     apiKey: "AIzaSyBbVHB-sjFqGDvpYiRTof8zdqF6oVEfYxo",
     authDomain: "dexxer-43e55.firebaseapp.com",
     projectId: "dexxer-43e55",
-    storageBucket: "dexxer-43e55.appspot.com",
+    storageBucket: "dexxer-43e55.firebasestorage.app",
     messagingSenderId: "80900359866",
     appId: "1:80900359866:web:818425eff775c7f55fe483"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // ELEMENTS
 const form = document.getElementById("messageForm");
 const wall = document.getElementById("wall");
-const anon = document.getElementById("anonymous");
-const nameInput = document.getElementById("name");
+const anonCheckbox = document.getElementById("anonymous");
+const nameField = document.getElementById("name");
 const messageInput = document.getElementById("message");
+
+// ✅ Checkbox unchecked by default
+anonCheckbox.checked = false;
+nameField.disabled = false;
+
+// Handle checkbox change
+anonCheckbox.addEventListener("change", () => {
+    nameField.disabled = anonCheckbox.checked;
+    if (anonCheckbox.checked) nameField.value = "~Anonymous ❤️";
+    else if(nameField.value === "~Anonymous ❤️") nameField.value = "";
+});
 
 // PASTEL GRADIENTS
 const gradients = [
@@ -28,15 +38,7 @@ const gradients = [
 ];
 
 // GOOFY IMAGES
-const images = [
-    'Ig1.jpg','Ig2.jpg','Ig3.jpg','Ig4.jpg','Ig5.jpg'
-];
-
-// ANON TOGGLE
-anon.addEventListener("change", () => {
-    nameInput.disabled = anon.checked;
-    if (anon.checked) nameInput.value = "";
-});
+const images = ['Ig1.jpg','Ig2.jpg','Ig3.jpg','Ig4.jpg','Ig5.jpg'];
 
 // REALTIME LISTENER
 db.collection("posts")
@@ -51,39 +53,50 @@ function renderPost(data) {
     const post = document.createElement("div");
     post.className = "post";
 
-    post.style.background =
-        gradients[Math.floor(Math.random() * gradients.length)];
+    // RANDOM GRADIENT
+    const randomBg = gradients[Math.floor(Math.random() * gradients.length)];
+    post.style.background = randomBg;
 
-    const img =
-        images[Math.floor(Math.random() * images.length)];
+    // RANDOM IMAGE
+    const img = images[Math.floor(Math.random() * images.length)];
+
+    // DISPLAY TEXT
+    let displayText = data.text;
+    if (!data.name.startsWith("~Anon")) {
+        // Mask named posts on wall
+        displayText = "******";
+    }
 
     post.innerHTML = `
-    <div class="post-textbox">
-        <div class="name">${escapeHTML(data.name)}</div>
-        <div class="time">${new Date(data.time).toLocaleString()}</div>
-        <p>${escapeHTML(data.text)}</p>
-    </div>
+        <div class="post-textbox">
+            <div class="name">${escapeHTML(data.name)}</div>
+            <div class="time">${new Date(data.time).toLocaleString()}</div>
+            <p>${escapeHTML(displayText)}</p>
+        </div>
+        <div class="post-image"></div>
+    `;
 
-    <div class="post-image"></div>
-`;
-
-    post.querySelector(".post-image").style.backgroundImage =
-        `url("${img}")`;
+    post.querySelector(".post-image").style.backgroundImage = `url("${img}")`;
 
     wall.appendChild(post);
 }
 
-// SUBMIT
-form.addEventListener("submit", async e => {
+// SUBMIT FORM
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const text = messageInput.value.trim();
     if (!text) return;
 
-    const name =
-        (!anon.checked && nameInput.value.trim())
-            ? nameInput.value.trim()
-            : "~Anon <3";
+    // Require name if not anonymous
+    if (!anonCheckbox.checked && nameField.value.trim() === "") {
+        alert("Please enter your name or check Anonymous!");
+        return;
+    }
+
+    const name = (!anonCheckbox.checked && nameField.value.trim() !== "")
+        ? nameField.value.trim()
+        : "~Anon <3";
 
     await db.collection("posts").add({
         name,
@@ -92,8 +105,9 @@ form.addEventListener("submit", async e => {
     });
 
     form.reset();
-    anon.checked = true;
-    nameInput.disabled = true;
+    anonCheckbox.checked = false; // reset to default
+    nameField.disabled = false;   // reset to default
+    nameField.value = "";         // clear name input
 });
 
 // ESCAPE HTML
