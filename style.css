@@ -1,112 +1,174 @@
+/* RESET */
 * {
     box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-body {
     margin: 0;
-    padding: 30px;
-    color: #fff;
-
-    background: url("Bg.jpg") center / cover fixed no-repeat;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 20, 25, 0.75);
-    z-index: -1;
+/* PAGE BACKGROUND */
+body {
+    min-height: 100vh;
+    background:
+        linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+        url("bg.jpg"); /* <-- REPLACE THIS IMAGE */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+
+    color: #ffffff;
+    padding: 30px 15px;
 }
 
+/* MAIN CONTAINER */
 .container {
-    max-width: 600px;
+    max-width: 620px;
     margin: auto;
 }
 
+/* TITLE */
 h1 {
     text-align: center;
     font-size: 2.4rem;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
 }
 
 .subtitle {
     text-align: center;
     opacity: 0.85;
-    margin-bottom: 25px;
+    margin-bottom: 28px;
 }
 
+/* FORM CARD */
 form {
     background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border-radius: 18px;
     padding: 20px;
-    border-radius: 14px;
-    margin-bottom: 30px;
-    backdrop-filter: blur(6px);
+    margin-bottom: 35px;
+
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
 }
 
+/* INPUTS */
 input, textarea, button {
     width: 100%;
-    padding: 12px;
-    border-radius: 10px;
     border: none;
-    font-size: 16px;
-    margin-bottom: 14px;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 1rem;
 }
 
 input, textarea {
-    background: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.92);
     color: #111;
+    margin-bottom: 14px;
 }
 
 textarea {
-    height: 100px;
     resize: none;
+    height: 110px;
 }
 
+/* BUTTON */
 button {
-    background: #ffcc70;
-    font-weight: bold;
+    background: #ffd27d;
+    color: #222;
+    font-weight: 700;
     cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 button:hover {
-    background: #ffd98e;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
 }
 
+/* ANON TOGGLE */
 .anon-toggle {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     font-size: 0.9rem;
     opacity: 0.85;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 /* POSTS */
-
 .post {
-    padding: 16px;
-    border-radius: 16px;
-    margin-bottom: 16px;
     position: relative;
+    padding: 18px;
+    border-radius: 20px;
+    margin-bottom: 18px;
 
-    border: 2px dashed rgba(255,255,255,0.8);
+    background: linear-gradient(135deg, #7aa2a9, #4f6d73);
+    border: 2px dashed rgba(255,255,255,0.6);
+
     box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-
-    /* NEW */
-    background-blend-mode: overlay;
+    overflow: hidden;
 }
 
-.post::before {
-    content: "";
+/* INNER TEXT GLASS */
+.post-textbox {
+    background: rgba(0,0,0,0.28);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+
+    padding: 12px 14px;
+    border-radius: 14px;
+
+    border: 1px solid rgba(255,255,255,0.18);
+    max-width: 85%;
+}
+
+/* NAME */
+.post-textbox .name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff;
+}
+
+/* TIME */
+.post-textbox .time {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    margin-bottom: 6px;
+    color: #eaeaea;
+}
+
+/* MESSAGE */
+.post-textbox p {
+    line-height: 1.45;
+    color: #ffffff;
+}
+
+/* GOOBY IMAGE */
+.post-image {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
     position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    border-radius: 16px;
-    z-index: 0;
+    top: 14px;
+    right: 14px;
+
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #ffffff;
 }
 
-.post * {
-    position: relative;
-    z-index: 1;
+/* MOBILE */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .post-textbox {
+        max-width: 90%;
+    }
+}    z-index: 1;
 }
 
 .post .name {
