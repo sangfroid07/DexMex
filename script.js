@@ -11,14 +11,20 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// DOM
+// DOM Elements
 const form = document.getElementById("messageForm");
 const nameInput = document.getElementById("name");
 const messageInput = document.getElementById("message");
 const anonCheckbox = document.getElementById("anonymous");
 const wall = document.getElementById("wall");
 
-// Toggle name input required based on Anonymous
+// Random goofy images
+const images = [
+    "Ig1.jpg","Ig2.jpg","Ig3.jpg","Ig4.jpg","Ig5.jpg",
+    "Ig6.jpg","Ig7.jpg","Ig8.jpg","Ig9.jpg","Ig10.jpg"
+];
+
+// Toggle name input based on anonymous
 anonCheckbox.addEventListener("change", () => {
     if (anonCheckbox.checked) {
         nameInput.value = "";
@@ -28,7 +34,7 @@ anonCheckbox.addEventListener("change", () => {
     }
 });
 
-// Escape HTML
+// Escape HTML function
 function escapeHTML(str) {
     return str.replace(/[&<>"']/g, m => ({
         '&':'&amp;',
@@ -39,55 +45,65 @@ function escapeHTML(str) {
     })[m]);
 }
 
-// Real-time listener
+// Render a single post
+function renderPost(doc) {
+    const data = doc.data();
+    const post = document.createElement("div");
+    post.classList.add("post-textbox");
+
+    // Random image if avatar not set
+    const img = data.avatar || images[Math.floor(Math.random() * images.length)];
+
+    // Determine message display (censored for named, visible for anonymous)
+    let displayText = (!data.isAnonymous && !data.showMessage) ? "*".repeat(data.text.length) : data.text;
+
+    // innerHTML with name, time, text, and image
+    post.innerHTML = `
+        <div class="name">${escapeHTML(data.name)}</div>
+        <div class="time">${new Date(data.time.toMillis()).toLocaleString()}</div>
+        <p>${escapeHTML(displayText)}</p>
+        <div class="post-image" style="background-image: url('${img}');"></div>
+    `;
+
+    wall.prepend(post);
+}
+
+// Real-time listener for posts
 db.collection("posts").orderBy("time", "desc").onSnapshot(snapshot => {
     wall.innerHTML = "";
-    snapshot.forEach(doc => {
-        const data = doc.data();
-
-        const post = document.createElement("div");
-        post.classList.add("post-textbox");
-
-        let displayText = data.censored ? "*".repeat(data.text.length) : data.text;
-
-        post.innerHTML = `
-            <div class="name">${escapeHTML(data.name)}</div>
-            <div class="time">${new Date(data.time.toMillis()).toLocaleString()}</div>
-            <p>${escapeHTML(displayText)}</p>
-        `;
-
-        wall.appendChild(post);
-    });
+    snapshot.forEach(doc => renderPost(doc));
 });
 
-// Submit form
+// Form submission
 form.addEventListener("submit", async e => {
     e.preventDefault();
 
     const text = messageInput.value.trim();
     if (!text) return;
 
-    let name, censored;
-    if (anonCheckbox.checked) {
-        name = "~Anon <3";
-        censored = false;
-    } else {
-        name = nameInput.value.trim();
-        if (!name) {
-            alert("Please enter your name or check 'Post as Anonymous'");
-            return;
-        }
-        censored = true;
+    const isAnonymous = anonCheckbox.checked;
+    const nameValue = nameInput.value.trim();
+
+    if (!isAnonymous && !nameValue) {
+        alert("Please enter your name or check 'Post as Anonymous'");
+        return;
     }
 
-    await db.collection("posts").add({
-        name: name,
+    const postData = {
+        name: isAnonymous ? "~Anon <3" : nameValue,
         text: text,
-        censored: censored,
+        isAnonymous: isAnonymous,
+        showMessage: isAnonymous ? true : false, // named messages are censored
+        avatar: isAnonymous ? images[Math.floor(Math.random() * images.length)] : null,
         time: firebase.firestore.Timestamp.now()
-    });
+    };
 
-    form.reset();
-    anonCheckbox.checked = false;
-    nameInput.disabled = false;
+    try {
+        await db.collection("posts").add(postData);
+        form.reset();
+        anonCheckbox.checked = false;
+        nameInput.disabled = false;
+    } catch(err) {
+        console.error("Error posting message:", err);
+    }
 });
