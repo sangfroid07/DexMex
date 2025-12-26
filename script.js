@@ -8,106 +8,65 @@ const firebaseConfig = {
     appId: "1:80900359866:web:818425eff775c7f55fe483"
 };
 
-// FIREBASE SETUP
-const firebaseConfig = {
-    // <-- your Firebase config here -->
-};
-
-firebase.initializeApp(firebaseConfig);
+fire.ase.initializ(pp(firebaseCon);
 const db = firebase.firestore();
 
-// ELEMENTS
+// DOM
 const form = document.getElementById("messageForm");
 const nameInput = document.getElementById("name");
-const anonCheckbox = document.getElementById("anonymous");
 const messageInput = document.getElementById("message");
+const anon = document.getElementById("anonymous");
 const wall = document.getElementById("wall");
 
-// AES Encryption (simple example for named messages)
-const secretKey = "DexxerSecretKey"; // change this to something secure
-
-function encryptMessage(message) {
-    return btoa(unescape(encodeURIComponent(message))); // simple base64
-}
-
-function decryptMessage(message) {
-    return decodeURIComponent(escape(atob(message)));
-}
-
-// TOGGLE NAME REQUIRED BASED ON ANONYMOUS CHECKBOX
-anonCheckbox.addEventListener("change", () => {
-    if (anonCheckbox.checked) {
-        nameInput.value = "";
-        nameInput.disabled = true;
-        nameInput.removeAttribute("required");
-    } else {
-        nameInput.disabled = false;
-        nameInput.setAttribute("required", "");
-    }
-});
-
-// ESCAPE HTML
-function escapeHTML(str) {
-    return str.replace(/[&<>"']/g, m => ({
-        '&':'&amp;',
-        '<':'&lt;',
-        '>':'&gt;',
-        '"':'&quot;',
-        "'":'&#39;'
-    })[m]);
-}
-
-// RENDER POSTS
+// LISTEN FOR POSTS
 db.collection("posts").orderBy("time", "desc").onSnapshot(snapshot => {
-    wall.innerHTML = "";
+    wall.innerHTML = ""; // clear wall
     snapshot.forEach(doc => {
         const data = doc.data();
 
         const post = document.createElement("div");
         post.classList.add("post-textbox");
 
-        // Decrypt if message is encrypted
-        let displayText = data.isNamed ? "••••••••••" : data.text;
-        if (data.isNamed && window.showSecret) {
-            displayText = decryptMessage(data.text);
-        }
+        // If message is censored (for named users)
+        let text = data.censored ? "*".repeat(data.text.length) : data.text;
 
         post.innerHTML = `
-            <div class="name">${escapeHTML(data.name)}</div>
-            <div class="time">${new Date(data.time).toLocaleString()}</div>
-            <p>${escapeHTML(displayText)}</p>
+            <div class="name">${data.name}</div>
+            <div class="time">${new Date(data.time.toMillis()).toLocaleString()}</div>
+            <p>${text}</p>
         `;
 
         wall.appendChild(post);
     });
 });
 
-// FORM SUBMIT
+// SUBMIT FORM
 form.addEventListener("submit", async e => {
     e.preventDefault();
 
     const text = messageInput.value.trim();
     if (!text) return;
 
-    const isAnonymous = anonCheckbox.checked;
-    let name = isAnonymous ? "~Anon <3" : nameInput.value.trim();
-
-    let messageToStore = text;
-    let isNamed = false;
-
-    if (!isAnonymous) {
-        messageToStore = encryptMessage(text);
-        isNamed = true;
+    let name, censored;
+    if (anon.checked) {
+        name = "~Anon <3";
+        censored = false; // anonymous posts are shown normally
+    } else {
+        name = nameInput.value.trim();
+        if (!name) {
+            alert("Please enter your name or check 'Post as Anonymous'");
+            return;
+        }
+        censored = true; // named users get their message censored
     }
 
     await db.collection("posts").add({
-        name: name,
-        text: messageToStore,
-        time: Date.now(),
-        isNamed: isNamed
+        name,
+        text,
+        censored,
+        time: firebase.firestore.Timestamp.now()
     });
 
     form.reset();
-    anonCheckbox.checked = false;
-    nameInput.disabled = false;
+    anon.checked = false;
 });
